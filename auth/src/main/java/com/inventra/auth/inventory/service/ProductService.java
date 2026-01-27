@@ -45,9 +45,30 @@ public class ProductService {
         return repo.findAll();
     }
 
-    public Product updateProduct(Product product) {
-        return repo.save(product);
+//    public Product updateProduct(Product product) {
+//        return repo.save(product);
+//    }
+
+    public Product updateProduct(Product updated) {
+        Product existing = repo.findById(updated.getProductId())
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        // Update only allowed fields:
+        existing.setName(updated.getName());
+        existing.setDescription(updated.getDescription());
+        existing.setUnitPrice(updated.getUnitPrice());
+        existing.setQuantity(updated.getQuantity());
+        existing.setReorderLevel(updated.getReorderLevel());
+
+        // =============================================================================
+        // Important: DO NOT set SKU here unless user is allowed to change SKU.
+        // Otherwise changing SKU will break uniqueness / history.
+        // =============================================================================
+
+        return repo.save(existing); // Now Hibernate does UPDATE instead of INSERT
     }
+
+
 
     public void deleteProduct(String sku) {
         Product p = repo.findBySku(sku);

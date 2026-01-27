@@ -49,6 +49,7 @@ public class SecurityConfig {
 
                         // 3. ADMIN-only WRITE (POST/DELETE) - specific BEFORE general
                         .requestMatchers(HttpMethod.POST, "/products/add").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/products/update").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/products/delete/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/products/*/stock-in").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/products/*/stock-out").hasAuthority("ROLE_ADMIN")

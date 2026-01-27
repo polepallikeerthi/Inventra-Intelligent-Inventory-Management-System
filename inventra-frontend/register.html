@@ -17,10 +17,10 @@
         }
 
         .card {
-            width: 420px;
+            width: 380px;
             background: #ffffff;
             border-radius: 10px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
@@ -32,9 +32,9 @@
 
         input,
         select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 14px;
+            width: 95%;
+            padding: 10px;
+            margin-bottom: 13px;
             border-radius: 6px;
             border: 1px solid #ccc;
             font-size: 14px;
@@ -83,7 +83,7 @@
 </script>
 
 <div class="card">
-    <h2>User Registration</h2>
+    <h2 style="color:#32a852">Registration Form</h2>
 
     <input type="text" id="username" placeholder="Username" />
     <input type="text" id="fullName" placeholder="Full Name" />
@@ -92,12 +92,12 @@
     <input type="password" id="password" placeholder="Password" />
     <input type="password" id="confirmPassword" placeholder="Confirm Password" />
 
-    <select id="role">
+    <select id="role" style="width:100%;">
         <option value="ADMIN">ADMIN</option>
         <option value="EMPLOYEE">EMPLOYEE</option>
     </select>
 
-    <button onclick="registerUser()">Register</button>
+    <button style="background-color:#32a852" onclick="registerUser()">Register</button>
 
     <p id="error" class="error"></p>
 </div>
