@@ -1,161 +1,333 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Inventra Dashboard</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --bg-main: #f8fafc;
+            --bg-main: #f9fafb;
             --card-bg: #ffffff;
-            --primary: #6366f1;
+            --primary: #6366f1;          /* indigo for accents */
             --primary-dark: #4f46e5;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --danger-light: #fef2f2;
-            --success: #10b981;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-            --shadow-sm: 0 4px 12px rgba(0,0,0,0.06);
-            --shadow-md: 0 10px 25px rgba(0,0,0,0.09);
-            --radius-lg: 16px;
+            --primary-soft: #f0f1ff;
+            --accent: #f59e0b;            /* amber/warning tone for low stock */
+            --text-main: #111827;
+            --text-muted: #42464e;
+            --border: #e5e7eb;
+            --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08);
+            --shadow-hover: 0 20px 25px -5px rgba(0,0,0,0.1);
+            --radius: 14px;
+            --sidebar-width: 260px;
+            --sidebar-collapsed: 72px;
         }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            margin: 0;
-            font-family: system-ui, sans-serif;
+            font-family: 'Inter', system-ui, sans-serif;
             background: var(--bg-main);
             color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.5;
+            font-size:10px;
         }
+
+        /* Topbar - title aligned better */
         .topbar {
-            height: 70px;
+            height: 72px;
             background: white;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 2.5rem;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            padding: 0 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
             position: sticky;
             top: 0;
-            z-index: 10;
+            z-index: 1000;
         }
-        .container { display: flex; min-height: calc(100vh - 70px); }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .topbar h2 {
+            margin-top: 25px;
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: #20327a;
+            letter-spacing: -0.4px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        #userRole {
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 1rem;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            font-size: 1.6rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn:hover {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        /* Sidebar - fixed & collapsible */
         .sidebar {
-            width: 260px;
+            position: fixed;
+            top: 72px;
+            left: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
             background: white;
             border-right: 1px solid var(--border);
             padding: 1.5rem 0;
+            transition: width 0.3s ease;
+            z-index: 900;
+            overflow-y: auto;
         }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar.collapsed a span.text {
+            display: none;
+        }
+
         .sidebar a {
-            display: block;
-            padding: 1rem 1.8rem;
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.3rem;
             color: var(--text-muted);
             text-decoration: none;
+            font-weight: 500;
+            font-size: 0.98rem;
             transition: all 0.25s;
+            gap: 1rem;
+            white-space: nowrap;
         }
-        .sidebar a:hover { background: rgba(99,102,241,0.08); }
-        .sidebar a.active { background: var(--primary); color: white; }
-        .main-content { flex: 1; padding: 2.5rem 3rem; }
-        h2 { font-size: 2.1rem; margin-bottom: 2rem; }
-        .cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-    gap: 1.4rem;
-    justify-items: start;  /* prevents full stretch */
-}
-.card.kpi {
-    max-width: 420px;      /* 👈 controls width */
-    width: 100%;
-}
 
-        .card.kpi {
-            background: white;
-            border-radius: 14px;
-            padding: 1.3rem 1.5rem;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.35s;
-            max-width: 380px;
+        .sidebar a:hover {
+            background: var(--primary-soft);
+            color: var(--primary);
         }
-        
+
+        .sidebar a.active {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .sidebar.collapsed a {
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        /* Main content shift */
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease;
+            min-height: calc(100vh - 72px);
+        }
+
+        .sidebar.collapsed + .main-wrapper {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        .main-content {
+            padding: 1.2rem 1.8rem;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 1.2rem;
+            color: var(--text-main);
+        }
+
+        /* KPI Cards - smaller, cleaner, no heavy gradients */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.3rem;
+            margin-bottom: 2.5rem;
+        }
+
+       .card.kpi {
+    background: white;
+    border-radius: var(--radius);
+    padding: 1.3rem 1.4rem;
+    box-shadow:
+        0 1px 3px rgba(0,0,0,0.12),
+        0 4px 8px rgba(0,0,0,0.08),
+        0 8px 16px rgba(0,0,0,0.06);   /* even lift + soft all-around */
+    transition: all 0.35s ease;
+    border: 1px solid rgba(0,0,0,0.04);   /* optional ultra-subtle border for extra definition */
+}
 
         .card.kpi:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+    box-shadow:
+        0 8px 16px rgba(0,0,0,0.12),
+        0 12px 24px rgba(0,0,0,0.10),
+        0 20px 40px rgba(0,0,0,0.08);
+}
+
+        .card.kpi .icon {
+            font-size: 2.4rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
         }
-        .card.blue { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; }
-        .card.orange { background: linear-gradient(135deg, #fb923c, #f97316); color: white; }
-        .card.kpi .icon { font-size: 2.6rem;
-    margin-bottom: 0.4rem; opacity: 0.94; }
-        .card.kpi h2 {  font-size: 2.8rem;
-    font-weight: 700;  margin: 0.3rem 0 0; line-height: 1; }
+
+        .card.kpi p {
+            font-size: 0.98rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .card.kpi h2 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1;
+            color: var(--text-main);
+        }
+
+        /* Low Stock Alerts - kept similar but consistent sizing */
         #lowStockAlerts {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
             gap: 1.6rem;
         }
+
         .alert-card {
             background: white;
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius);
             padding: 1.6rem;
-            box-shadow: var(--shadow-sm);
-            border-left: 6px solid var(--warning);
-            transition: all 0.3s;
+        box-shadow:
+        0 1px 3px rgba(0,0,0,0.12),
+        0 4px 8px rgba(0,0,0,0.08),
+        0 8px 16px rgba(0,0,0,0.06);
+<!--            border-left: 5px solid var(&#45;&#45;accent);-->
+            transition: all 0.3s ease;
         }
-        .alert-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-md); }
-        .alert-card.critical { border-left-color: var(--danger); background: var(--danger-light); }
-        .alert-card h4 { margin: 0 0 0.9rem; font-size: 1.3rem; }
-        .alert-card .qty { color: var(--danger); font-weight: 700; font-size: 1.15rem; }
-        .alert-card .meta { margin-top: 1.2rem; font-size: 0.88rem; color: var(--text-muted); display: flex; justify-content: space-between; }
-        @media (max-width: 900px) {
-            .container { flex-direction: column; }
-            .sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: 1rem 0; }
-        }
-        @media (max-width: 600px) {
-    .card.kpi {
-        max-width: 100%;
-    }
+
+      .alert-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 8px 16px rgba(0,0,0,0.12),
+        0 12px 24px rgba(0,0,0,0.10),
+        0 20px 40px rgba(0,0,0,0.08);
 }
 
+        .alert-card.critical {
+            border-left-color: var(--danger: #ef4444);
+        }
+
+        .alert-card h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.9rem;
+        }
+
+        .alert-card .qty {
+            color: #ef4444;
+            font-weight: 800;
+            font-size: 1.45rem;
+            margin: 0.4rem 0 1rem;
+        }
+
+        .alert-card .meta {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .clickable { cursor: pointer; }
+        .clickable:hover { opacity: 0.97; }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .sidebar {
+                left: -100%;
+                transition: left 0.3s;
+            }
+            .sidebar.open { left: 0; }
+            .main-wrapper { margin-left: 0 !important; }
+        }
+
+        @media (max-width: 640px) {
+            .cards, #lowStockAlerts { grid-template-columns: 1fr; }
+            .card.kpi h2 { font-size: 2.8rem; }
+            .main-content { padding: 1.6rem 1.4rem; }
+        }
     </style>
 </head>
 <body>
 
 <div class="topbar">
-    <h2>Inventory System</h2>
-    <span id="userRole">ADMIN</span>
+    <div class="topbar-left">
+        <h2>Inventory Management System</h2>
+    </div>
+    <div class="topbar-right">
+        <span id="userRole">ADMIN</span>
+        <button class="toggle-btn" id="sidebarToggle">☰</button>
+    </div>
 </div>
 
-<div class="container">
-    <div class="sidebar">
-        <a href="dashboard.html" class="active">📊 Dashboard</a>
-        <a href="products.html">📦 Products</a>
-        <a href="low-stock.html">⚠ Low Stock</a>
-        <a href="reports.html">📈 Reports</a>
-        <a href="add-product.html" class="admin-only">➕ Add Product</a>
-<a href="register.html" class="admin-only">👤 Register User</a>
-        <a href="login.html" class="logout">➜ Logout</a>
-    </div>
+<div class="sidebar" id="sidebar">
+    <a href="dashboard.html" class="active"><span class="icon">📊</span><span class="text">Dashboard</span></a>
+    <a href="products.html"><span class="icon">📦</span><span class="text">Products</span></a>
+    <a href="low-stock.html"><span class="icon">⚠</span><span class="text">Low Stock</span></a>
+    <a href="reports.html"><span class="icon">📈</span><span class="text">Reports</span></a>
+    <a href="add-product.html" class="admin-only"><span class="icon">➕</span><span class="text">Add Product</span></a>
+    <a href="register.html" class="admin-only"><span class="icon">👤</span><span class="text">Register User</span></a>
+    <a href="login.html" class="logout"><span class="icon">➜</span><span class="text">Logout</span></a>
+</div>
 
+<div class="main-wrapper">
     <div class="main-content">
         <h2>Dashboard</h2>
 
         <div class="cards">
-            <div class="card kpi blue">
-                <span class="icon">📦</span>
+            <div class="card kpi blue-accent">
+                <div class="icon">📦</div>
                 <p>Total Products</p>
                 <h2 id="totalProducts">0</h2>
             </div>
-
-            <div class="card kpi orange clickable" onclick="goLowStock()">
-                <span class="icon">⚠️</span>
+            <div class="card kpi orange-accent clickable" onclick="goLowStock()">
+                <div class="icon">⚠️</div>
                 <p>Low Stock Items</p>
                 <h2 id="lowstock">0</h2>
             </div>
         </div>
 
-        <div class="card">
-            <h3>Active Low Stock Alerts</h3>
+        <div style="background:white; border-radius:var(--radius); padding:1.8rem; box-shadow:var(--shadow-sm);">
+            <h3 style="font-size:1.35rem; font-weight:700; margin-bottom:1.5rem; color:var(--text-main);">Active Low Stock Alerts</h3>
             <div id="lowStockAlerts"></div>
         </div>
     </div>
@@ -164,10 +336,9 @@
 <script src="js/dashboard.js"></script>
 <script src="js/common.js"></script>
 <script>
-    // Role-based visibility
+    // ── Original logic unchanged ──
     const role = localStorage.getItem("role") || "USER";
     document.getElementById("userRole").innerText = role;
-
     if (role !== "ADMIN") {
         document.querySelectorAll(".admin-only").forEach(el => el.style.display = "none");
     }
@@ -176,74 +347,68 @@
         window.location.href = "low-stock.html";
     }
 
-    // Load low stock alerts (fixed to show actual product name)
+    // Sidebar toggle
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('sidebarToggle');
+
+    toggleBtn.addEventListener('click', () => {
+        if (window.innerWidth > 1024) {
+            sidebar.classList.toggle('collapsed');
+        } else {
+            sidebar.classList.toggle('open');
+        }
+    });
+
+    // Your alert loading function (minor display polish only)
     async function loadLowStockAlerts() {
         try {
             const token = localStorage.getItem("token");
             if (!token) return;
-
             const res = await fetch("http://localhost:8080/alerts/low-stock", {
                 headers: { "Authorization": "Bearer " + token }
             });
-
             if (!res.ok) throw new Error("Failed to load alerts");
             const alerts = await res.json();
-
             const container = document.getElementById("lowStockAlerts");
             container.innerHTML = "";
-
             if (alerts.length === 0) {
-                container.innerHTML = '<p class="text-center text-success">No active low stock alerts</p>';
+                container.innerHTML = '<p style="text-align:center; padding:2rem 0; color:#10b981; font-size:1.1rem;">No active low stock alerts</p>';
                 return;
             }
-
             alerts.forEach(alert => {
-                // Extract product name from message or product object
                 let productName = "Unknown Product";
-                if (alert.product && alert.product.name) {
-                    productName = alert.product.name;
-                } else if (alert.message) {
-                    // Fallback: try to parse name from message
+                if (alert.product && alert.product.name) productName = alert.product.name;
+                else if (alert.message) {
                     const match = alert.message.match(/Low stock detected: (.*?) \(Qty/);
                     if (match && match[1]) productName = match[1].trim();
                 }
-
                 const qtyMatch = alert.message.match(/Qty: (\d+)/);
                 const qty = qtyMatch ? qtyMatch[1] : "Unknown";
-
                 const reorderMatch = alert.message.match(/Reorder: (\d+)/);
                 const reorder = reorderMatch ? reorderMatch[1] : "Unknown";
-
-                const triggered = new Date(alert.triggeredAt).toLocaleString();
+                const triggered = new Date(alert.triggeredAt).toLocaleString([], {year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
 
                 const card = document.createElement("div");
-                card.className = "alert-card";
+                card.className = `alert-card ${Number(qty) < 10 ? 'critical' : ''}`;
                 card.innerHTML = `
-                    <h4>Low stock alert: '${productName}'</h4>
-                    <p class="qty">Only ${qty} units left (Reorder Level: ${reorder})</p>
-                    <div class="meta">
-                        <span>Triggered: ${triggered}</span>
-                    </div>
+                    <h4>Low stock: <strong>${productName}</strong></h4>
+                    <div class="qty">Only ${qty} left</div>
+                    <p style="color:#4b5563; margin:0.4rem 0 1.1rem;">Reorder at: ${reorder}</p>
+                    <div class="meta"><span>Triggered: ${triggered}</span></div>
                 `;
                 container.appendChild(card);
             });
-
         } catch (err) {
             console.error(err);
-            document.getElementById("lowStockAlerts").innerHTML = 
-                '<p class="text-danger">Error loading alerts</p>';
+            document.getElementById("lowStockAlerts").innerHTML =
+                '<p style="text-align:center; padding:2rem 0; color:#ef4444;">Error loading alerts</p>';
         }
     }
 
-    // Call on page load
     document.addEventListener("DOMContentLoaded", loadLowStockAlerts);
-    
-    // Load alerts when page loads + refresh every 60 seconds
     document.addEventListener("DOMContentLoaded", () => {
-        refreshLowStockAlerts();                    // Load immediately
-        setInterval(refreshLowStockAlerts, 60000);  // Every 1 minute
+        setInterval(loadLowStockAlerts, 60000);
     });
 </script>
-
 </body>
 </html>

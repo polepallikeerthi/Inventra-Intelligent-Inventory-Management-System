@@ -1,233 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Low Stock | Inventra</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Low Stock | Inventra</title>
 
-<style>
-:root {
-    --bg-main: #f8fafc;
-    --card-bg: #ffffff;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --danger-light: #fff5f5;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --border: #e2e8f0;
-    --shadow-sm: 0 4px 10px rgba(0,0,0,0.06);
-    --radius: 12px;
-}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-body {
-    margin: 0;
-    font-family: system-ui, sans-serif;
-    background: var(--bg-main);
-    color: var(--text-main);
-}
+    <style>
+        :root {
+            --bg-main: #f9fafb;
+            --card-bg: #ffffff;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-soft: #eef2ff;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --danger-soft: #fef2f2;
+            --success: #10b981;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-hover: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --radius: 10px;
+            --sidebar-width: 260px;
+            --sidebar-collapsed: 72px;
+        }
 
-/* ===== TOP BAR ===== */
-.topbar {
-    height: 64px;
-    background: white;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 2rem;
-    position: sticky;
-    top: 0;
-}
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
 
-/* ===== LAYOUT ===== */
-.container {
-    display: flex;
-    min-height: calc(100vh - 64px);
-}
+        .topbar {
+            height: 72px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-.sidebar {
-    width: 240px;
-    background: white;
-    border-right: 1px solid var(--border);
-    padding: 1rem 0;
-}
+         .topbar-left {
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
 
-.sidebar a {
-    display: block;
-    padding: 0.85rem 1.6rem;
-    color: var(--text-muted);
-    text-decoration: none;
-    font-size: 0.95rem;
-}
+        .topbar h2 {
+            margin-top: 25px;
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: #20327a;
+            letter-spacing: -0.4px;
+        }
 
-.sidebar a.active {
-    background: var(--warning);
-    color: white;
-}
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
 
-.main-content {
-    flex: 1;
-    padding: 2rem 2.5rem;
-}
+        #userRole {
+            font-weight: 700;
+            font-size: 1rem;
+        }
 
-h2 {
-    margin-bottom: 1.5rem;
-    font-size: 1.7rem;
-}
+        .toggle-btn {
+            background: none;
+            border: none;
+            font-size: 1.6rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
 
-/* ===== GRID (KEY FIX) ===== */
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, 320px); /* 🔥 fixed compact width */
-    gap: 1.2rem;
-    justify-content: flex-start;
-}
+        .toggle-btn:hover {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
 
-/* ===== CARD (COMPACT) ===== */
-.low-stock-card {
-    background: var(--card-bg);
-    border-radius: var(--radius);
-    padding: 1.1rem 1.3rem;
-    border-left: 5px solid var(--warning);
-    box-shadow: var(--shadow-sm);
-}
+        .sidebar {
+            position: fixed;
+            top: 72px;
+            left: 0;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 0;
+            transition: width 0.3s ease;
+            z-index: 900;
+            overflow-y: auto;
+        }
 
-.low-stock-card.critical {
-    border-left-color: var(--danger);
-    background: var(--danger-light);
-}
+        .sidebar.collapsed { width: var(--sidebar-collapsed); }
+        .sidebar.collapsed a span.text { display: none; }
 
-.low-stock-card h3 {
-    margin: 0;
-    font-size: 1.1rem;
-}
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.3rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.98rem;
+            transition: all 0.25s;
+            gap: 1rem;
+            white-space: nowrap;
+        }
 
-.sku {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
+        .sidebar a:hover { background: var(--primary-soft); color: var(--primary); }
+        .sidebar a.active { background: var(--warning); color: white; font-weight: 600; }
 
-/* ===== NUMBERS ===== */
-.big-number {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--danger);
-    margin: 0.4rem 0;
-}
+        .sidebar.collapsed a { justify-content: center; padding: 1rem; }
 
-.stock-info p {
-    margin: 0.25rem 0;
-    font-size: 0.85rem;
-}
+        .main-wrapper {
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease;
+            min-height: calc(100vh - 72px);
+        }
 
-/* ===== ALERT BOX ===== */
-.alert-box {
-    margin-top: 0.8rem;
-    padding: 0.6rem;
-    font-size: 0.8rem;
-    background: rgba(239,68,68,0.08);
-    border: 1px dashed var(--danger);
-    border-radius: 6px;
-    text-align: center;
-    color: var(--danger);
-    font-weight: 600;
-}
+        .sidebar.collapsed + .main-wrapper { margin-left: var(--sidebar-collapsed); }
 
-/* ===== EMPTY STATE ===== */
-#noLowStock {
-    display: none;
-    margin-top: 3rem;
-    text-align: center;
-    font-size: 1rem;
-    color: #10b981;
-}
+        .main-content { padding: 2rem 2.5rem; }
 
-/* ===== MOBILE ===== */
-@media (max-width: 768px) {
-    .container { flex-direction: column; }
-    .sidebar { width: 100%; }
-    .main-content { padding: 1.5rem; }
-    .grid-container {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
+        h2 {
+            font-size: 1.9rem;
+            font-weight: 800;
+            margin-bottom: 1.8rem;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.4rem;
+        }
+
+        @media (min-width: 1100px) {
+            .grid-container {
+                grid-template-columns: repeat(3, 1fr);
+                max-width: 1280px;
+                margin: 0 auto;
+            }
+        }
+
+        .low-stock-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.1rem 1.3rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .low-stock-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .product-name {
+            font-size: 1.18rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .sku {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: monospace;
+            margin-bottom: 0.6rem;
+        }
+
+        .content-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.2rem;
+            flex: 1;
+        }
+
+        .quantity {
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: var(--danger);
+            line-height: 0.95;
+            min-width: 70px;
+        }
+
+        .details {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            flex: 1;
+        }
+
+        .details strong {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .alert-box {
+            padding: 0.5rem 0.9rem;
+            background: rgba(239,68,68,0.07);
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #dc2626;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .critical .alert-box {
+            background: rgba(239,68,68,0.13);
+            color: #b91c1c;
+        }
+
+        #noLowStock {
+            text-align: center;
+            padding: 6rem 1rem;
+            color: var(--success);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar { left: -100%; transition: left 0.3s; }
+            .sidebar.open { left: 0; }
+            .main-wrapper { margin-left: 0 !important; }
+        }
+
+        @media (max-width: 640px) {
+            .grid-container { grid-template-columns: 1fr; }
+            .main-content { padding: 1.6rem 1.4rem; }
+            .quantity { font-size: 2.2rem; }
+        }
+    </style>
 </head>
-
 <body>
 
 <div class="topbar">
-    <h2>Inventory System</h2>
-    <span id="userRole">ADMIN</span>
+    <h2>Inventory Management System</h2>
+    <div class="topbar-right">
+        <span id="userRole">ADMIN</span>
+        <button class="toggle-btn" id="sidebarToggle">☰</button>
+    </div>
 </div>
 
-<div class="container">
-    <div class="sidebar">
-        <a href="dashboard.html">📊 Dashboard</a>
-        <a href="products.html">📦 Products</a>
-        <a href="low-stock.html" class="active">⚠ Low Stock</a>
-        <a href="reports.html">📈 Reports</a>
-        <a href="add-product.html">➕ Add Product</a>
-        <a href="login.html">➜ Logout</a>
-    </div>
+<div class="sidebar" id="sidebar">
+    <a href="dashboard.html"><span class="icon">📊</span><span class="text">Dashboard</span></a>
+    <a href="products.html"><span class="icon">📦</span><span class="text">Products</span></a>
+    <a href="low-stock.html" class="active"><span class="icon">⚠</span><span class="text">Low Stock</span></a>
+    <a href="reports.html"><span class="icon">📈</span><span class="text">Reports</span></a>
+    <a href="add-product.html" class="admin-only"><span class="icon">➕</span><span class="text">Add Product</span></a>
+    <a href="login.html" class="logout"><span class="icon">➜</span><span class="text">Logout</span></a>
+</div>
 
+<div class="main-wrapper">
     <div class="main-content">
         <h2>Low Stock Products</h2>
 
         <div class="grid-container" id="lowStockGrid"></div>
 
-        <p id="noLowStock">✅ No low stock items</p>
+        <p id="noLowStock">✅ No low stock items at the moment</p>
     </div>
 </div>
 
 <script>
-const token = localStorage.getItem("token");
-document.getElementById("userRole").innerText =
-    localStorage.getItem("role") || "USER";
+    const token = localStorage.getItem("token");
+    const role  = localStorage.getItem("role") || "USER";
 
-async function loadLowStock() {
-    try {
-        const res = await fetch("http://localhost:8080/products/low-stock", {
-            headers: { Authorization: "Bearer " + token }
-        });
-        const data = await res.json();
+    if (!token) window.location.href = "login.html";
 
-        const grid = document.getElementById("lowStockGrid");
-        const empty = document.getElementById("noLowStock");
-        grid.innerHTML = "";
+    document.getElementById("userRole").innerText = role.toUpperCase();
 
-        if (!data.length) {
-            empty.style.display = "block";
-            return;
-        }
-
-        empty.style.display = "none";
-
-        data.forEach(p => {
-            const critical = p.quantity <= p.reorderLevel / 2;
-            const card = document.createElement("div");
-            card.className = `low-stock-card ${critical ? "critical" : ""}`;
-
-            card.innerHTML = `
-                <h3>${p.name}</h3>
-                <div class="sku">SKU: ${p.sku}</div>
-                <div class="big-number">${p.quantity}</div>
-                <div class="stock-info">
-                    <p><strong>Reorder:</strong> ${p.reorderLevel}</p>
-                    <p><strong>Price:</strong> ₹${Number(p.unitPrice).toFixed(2)}</p>
-                </div>
-                <div class="alert-box">
-                    ⚠ Low Stock – Restock Recommended
-                </div>
-            `;
-            grid.appendChild(card);
-        });
-    } catch (e) {
-        alert("Failed to load low stock");
+    if (role !== "ADMIN") {
+        document.querySelectorAll(".admin-only").forEach(el => el.style.display = "none");
     }
-}
 
-document.addEventListener("DOMContentLoaded", loadLowStock);
+    document.getElementById("sidebarToggle").addEventListener("click", () => {
+        const sidebar = document.getElementById("sidebar");
+        if (window.innerWidth > 1024) {
+            sidebar.classList.toggle("collapsed");
+        } else {
+            sidebar.classList.toggle("open");
+        }
+    });
+
+    async function loadLowStock() {
+        try {
+            const res = await fetch("http://localhost:8080/products/low-stock", {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+            const data = await res.json();
+            const grid = document.getElementById("lowStockGrid");
+            const empty = document.getElementById("noLowStock");
+
+            grid.innerHTML = "";
+            empty.style.display = data.length ? "none" : "block";
+
+            if (!data.length) return;
+
+            data.forEach(p => {
+                const isCritical = p.quantity <= p.reorderLevel / 2;
+
+                const card = document.createElement("div");
+                card.className = `low-stock-card ${isCritical ? 'critical' : ''}`;
+
+                card.innerHTML = `
+                    <div class="product-name">${p.name || 'Unnamed Product'}</div>
+                    <div class="sku">SKU: ${p.sku || 'N/A'}</div>
+
+                    <div class="content-row">
+                        <div class="quantity">${p.quantity}</div>
+                        <div class="details">
+                            <div><strong>Reorder:</strong> ${p.reorderLevel}</div>
+                            <div><strong>Price:</strong> ₹${Number(p.unitPrice || 0).toFixed(2)}</div>
+                        </div>
+                    </div>
+
+                    <div class="alert-box">
+                        ${isCritical ? 'CRITICAL' : 'Low'} Stock – Restock Recommended
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        } catch (err) {
+            console.error("Low stock load error:", err);
+            document.getElementById("lowStockGrid").innerHTML =
+                `<p style="text-align:center; color:var(--danger); padding:4rem 1rem;">
+                    Failed to load low stock items: ${err.message}
+                </p>`;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadLowStock);
 </script>
 
 </body>
